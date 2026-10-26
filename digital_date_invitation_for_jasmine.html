@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Invitation for Jasmine</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        gold: {
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                            glow: '#d4af37'
+                        },
+                        spy: {
+                            red: '#ff2a5f',
+                            cyan: '#00f0ff',
+                            dark: '#0a0d14'
+                        },
+                        lego: {
+                            yellow: '#ffcc00',
+                            red: '#e3000b',
+                            blue: '#0055bf'
+                        }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 3s infinite ease-in-out',
+                        'float': 'float 6s ease-in-out infinite',
+                        'laser-scan': 'laserScan 2.5s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.4, transform: 'scale(1)' },
+                            '50%': { opacity: 0.8, transform: 'scale(1.05)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        laserScan: {
+                            '0%': { top: '0%' },
+                            '100%': { top: '100%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #08080c;
+            color: #f3f4f6;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d0e15;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262938;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b3f54;
+        }
+
+        /* Gold Gradient Text & Elements */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fff3d1 0%, #ffd700 50%, #cca000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-border-glow {
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .gold-border-glow:hover {
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.35);
+            border: 1px solid rgba(212, 175, 55, 0.6);
+        }
+
+        /* Cyber Glassmorphism */
+        .glass-card {
+            background: rgba(18, 20, 29, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Laser Grid overlay for Spy Mode */
+        .spy-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* Confetti Canvas positioning */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Background Ambient Glows -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-gradient-to-b from-amber-500/10 via-purple-900/5 to-transparent blur-3xl pointer-events-none -z-10"></div>
+    <div class="fixed bottom-0 right-0 w-[400px] h-[400px] bg-rose-900/10 blur-3xl pointer-events-none -z-10"></div>
+
+    <!-- Header Section -->
+    <header class="w-full pt-12 pb-6 px-4 text-center relative z-10">
+        <div class="max-w-4xl mx-auto">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs tracking-widest uppercase mb-6 animate-pulse">
+                <i class="fa-solid fa-sparkles text-amber-400"></i>
+                Exclusive Invitation • NYC
+            </div>
+            
+            <!-- Main Headline -->
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-white mb-4">
+                An Evening Designed For <span class="gold-gradient-text italic font-normal">Jasmine</span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-gray-400 text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed">
+                Two unique experiences crafted for unforgettable memories in the city. 
+                <span class="text-gray-200 font-medium">Which path shall we embark on?</span>
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- Navigation Tabs for Switching/Filtering Options -->
+        <div class="flex justify-center mb-10">
+            <div class="bg-black/50 p-1.5 rounded-2xl border border-white/10 backdrop-blur-md inline-flex gap-1 md:gap-2">
+                <button id="tab-all" onclick="filterOptions('all')" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-lg shadow-amber-500/10">
+                    <i class="fa-solid fa-grid-2 mr-2"></i>Both Adventures
+                </button>
+                <button id="tab-lego" onclick="filterOptions('lego')" class="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white transition-all duration-300">
+                    <i class="fa-solid fa-cubes mr-2 text-amber-400"></i>Lego & Movie
+                </button>
+                <button id="tab-spy" onclick="filterOptions('spy')" class="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white transition-all duration-300">
+                    <i class="fa-solid fa-user-ninja mr-2 text-cyan-400"></i>SPYSCAPE NYC
+                </button>
+            </div>
+        </div>
+
+        <!-- Date Options Grid -->
+        <div id="options-container" class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+
+            <!-- OPTION 1: LEGO & CLAYFACE -->
+            <div id="card-lego" class="glass-card glass-card-hover rounded-3xl p-6 md:p-8 flex flex-col justify-between relative overflow-hidden group">
+                <!-- Top Decorative Accent -->
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500"></div>
+                <div class="absolute -right-16 -top-16 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all duration-500"></div>
+
+                <div>
+                    <!-- Option Header -->
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="px-3.5 py-1.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-mono font-semibold tracking-wider uppercase border border-amber-500/20">
+                            Option 01 • Creative & Cozy
+                        </span>
+                        <div class="text-2xl text-amber-400/80">
+                            <i class="fa-solid fa-film"></i>
+                        </div>
+                    </div>
+
+                    <!-- Title -->
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold text-white mb-3 group-hover:text-amber-200 transition-colors">
+                        Lego Minifig Creation & <br>Clayface Cinema Night
+                    </h2>
+
+                    <!-- Description -->
+                    <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-6 font-light">
+                        A relaxed, highly creative evening starting with custom mini-fig design, paired with gourmet NYC snacks and a private screening of the dark noir villain cinematic masterpiece: <span class="text-amber-300 italic font-normal">Clayface</span>.
+                    </p>
+
+                    <!-- Feature Pillars -->
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-start gap-3.5 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-lego text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-200 uppercase tracking-wider">Custom Lego Studio</h4>
+                                <p class="text-xs text-gray-400 mt-0.5">Assemble our customized avatar mini-figs with endless accessories.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3.5 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                            <div class="w-8 h-8 rounded-lg bg-red-500/20 text-red-400 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-popcorn text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-200 uppercase tracking-wider">Movie Screening & Bites</h4>
+                                <p class="text-xs text-gray-400 mt-0.5">Curated artisanal cocktails/drinks, cozy vibes, and classic NYC popcorn spreads.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Lego Mini-App Preview -->
+                <div class="my-4 p-4 rounded-2xl bg-black/40 border border-amber-500/20 text-center relative">
+                    <div class="text-xs text-amber-400/80 uppercase font-mono tracking-widest mb-2">Build Preview</div>
+                    <div class="flex justify-center items-center gap-4 py-2">
+                        <!-- Fig 1 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400 flex items-center justify-center text-amber-300 text-lg mb-1">
+                                <i class="fa-solid fa-user-astronaut"></i>
+                            </div>
+                            <span class="text-[11px] text-gray-400 font-mono">You</span>
+                        </div>
+                        <i class="fa-solid fa-plus text-xs text-amber-500/50"></i>
+                        <!-- Fig 2 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-rose-400/20 border border-rose-400 flex items-center justify-center text-rose-300 text-lg mb-1">
+                                <i class="fa-solid fa-crown"></i>
+                            </div>
+                            <span class="text-[11px] text-gray-400 font-mono">Jasmine</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action / RSVP -->
+                <div class="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="text-xs text-gray-400">
+                        <i class="fa-regular fa-clock text-amber-400 mr-1.5"></i> Cozy • ~3.5 Hours
+                    </div>
+                    <button onclick="selectOption('Lego & Clayface Movie Night', 'lego')" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-semibold text-sm transition-all duration-300 transform active:scale-95 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                        <span>Select Lego Night</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- OPTION 2: SPYSCAPE NYC -->
+            <div id="card-spy" class="glass-card glass-card-hover rounded-3xl p-6 md:p-8 flex flex-col justify-between relative overflow-hidden group spy-grid">
+                <!-- Top Decorative Accent -->
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600"></div>
+                <div class="absolute -right-16 -top-16 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all duration-500"></div>
+
+                <div>
+                    <!-- Option Header -->
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="px-3.5 py-1.5 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-mono font-semibold tracking-wider uppercase border border-cyan-500/20">
+                            Option 02 • High Thrill & Secret Operations
+                        </span>
+                        <div class="text-2xl text-cyan-400/80">
+                            <i class="fa-solid fa-user-secret"></i>
+                        </div>
+                    </div>
+
+                    <!-- Title -->
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold text-white mb-3 group-hover:text-cyan-200 transition-colors">
+                        SPYSCAPE HQ • Manhattan <br><span class="text-cyan-400 font-sans text-xl md:text-2xl">Interactive Spy Mission</span>
+                    </h2>
+
+                    <!-- Description -->
+                    <p class="text-gray-300 text-sm md:text-base leading-relaxed mb-6 font-light">
+                        Step into a high-tech 60,000 sq ft intelligence HQ in Midtown NYC. We will test our physical agility dodging real laser fields, decode encrypted intelligence, master deception analysis, and uncover our true spy profiles.
+                    </p>
+
+                    <!-- Feature Pillars -->
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-start gap-3.5 p-3 rounded-xl bg-white/[0.03] border border-cyan-500/10">
+                            <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-bolt text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-200 uppercase tracking-wider">Laser Agility Obstacle</h4>
+                                <p class="text-xs text-gray-400 mt-0.5">Sprint, dodge, and bend through live laser fields against the clock.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3.5 p-3 rounded-xl bg-white/[0.03] border border-cyan-500/10">
+                            <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="fa-solid fa-key text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-200 uppercase tracking-wider">Code Breaking & Lie Detection</h4>
+                                <p class="text-xs text-gray-400 mt-0.5">Interrogate suspects, spot micro-expressions, and hack encrypted messages.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Laser Scan Visual Accent -->
+                <div class="my-2 p-3 rounded-xl bg-black/60 border border-cyan-500/30 flex items-center justify-between text-xs font-mono text-cyan-300 relative overflow-hidden">
+                    <div class="absolute left-0 right-0 h-0.5 bg-cyan-400/80 shadow-[0_0_10px_#00f0ff] animate-laser-scan"></div>
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-crosshairs text-spy-red"></i> CLASSIFIED CLEARANCE: LEVEL 5</span>
+                    <span class="text-[10px] text-gray-400 uppercase">Midtown NYC</span>
+                </div>
+
+                <!-- Action / RSVP -->
+                <div class="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="text-xs text-gray-400">
+                        <i class="fa-solid fa-location-dot text-cyan-400 mr-1.5"></i> 929 8th Ave • High Energy
+                    </div>
+                    <button onclick="selectOption('SPYSCAPE Spy Games NYC', 'spy')" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-semibold text-sm transition-all duration-300 transform active:scale-95 shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
+                        <span>Select Spy Mission</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Wildcard Option / Interactive Decision Maker -->
+        <div class="mt-12 text-center">
+            <div class="glass-card rounded-2xl p-6 max-w-xl mx-auto border border-white/10">
+                <h3 class="text-lg font-serif font-semibold text-white mb-2">Can't decide right now?</h3>
+                <p class="text-xs md:text-sm text-gray-400 mb-4">Let fate choose for us, or request a custom combination!</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="pickRandom()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-medium border border-white/10 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-dice text-amber-400"></i> Flip a Coin for Us
+                    </button>
+                    <button onclick="selectOption('Surprise Me! Dealer\'s Choice', 'both')" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-medium border border-white/10 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-400"></i> Surprise Me (Both Sound Amazing)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- RSVP Modal Window -->
+    <div id="rsvp-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-card gold-border-glow rounded-3xl p-6 md:p-8 max-w-lg w-full relative transform scale-95 transition-all duration-300" id="modal-card">
+            
+            <!-- Close Button -->
+            <button onclick="closeModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full bg-white/5 flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="text-center mb-6">
+                <div id="modal-badge" class="inline-block px-3 py-1 rounded-full text-xs font-mono mb-3 bg-amber-500/20 text-amber-300">
+                    CONFIRMING RESERVATION
+                </div>
+                <h3 class="text-2xl md:text-3xl font-serif font-bold text-white mb-2" id="modal-title">
+                    Mission Selection
+                </h3>
+                <p class="text-xs md:text-sm text-gray-300" id="modal-subtitle">
+                    Locking in our plans for Jasmine's NYC Date Night.
+                </p>
+            </div>
+
+            <!-- Interactive Form -->
+            <form id="rsvp-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <!-- Selected Option Display -->
+                <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
+                    <span class="text-xs text-gray-400 font-mono">CHOICE:</span>
+                    <span id="selected-choice-text" class="text-sm font-semibold text-amber-300">Lego Minifig & Clayface</span>
+                </div>
+
+                <!-- Preferred Date / Time -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider">Preferred Night</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="day" value="Friday" class="peer sr-only" checked>
+                            <div class="p-2.5 text-center text-xs rounded-xl bg-white/5 border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/20 peer-checked:text-amber-200 hover:bg-white/10 transition-all">
+                                Friday Evening
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="day" value="Saturday" class="peer sr-only">
+                            <div class="p-2.5 text-center text-xs rounded-xl bg-white/5 border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/20 peer-checked:text-amber-200 hover:bg-white/10 transition-all">
+                                Saturday Night
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="day" value="Sunday" class="peer sr-only">
+                            <div class="p-2.5 text-center text-xs rounded-xl bg-white/5 border border-white/10 peer-checked:border-amber-400 peer-checked:bg-amber-500/20 peer-checked:text-amber-200 hover:bg-white/10 transition-all">
+                                Sunday Afternoon
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Drink / Food Preference -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider">Jasmine's Drink Preference</label>
+                    <input type="text" id="drink-pref" placeholder="e.g. Espresso Martini, Matcha, Red Wine, Sparkling Water..." class="w-full px-4 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-amber-400 transition-colors">
+                </div>
+
+                <!-- Secret Message / Note -->
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1.5 uppercase tracking-wider">Special Requests / Notes</label>
+                    <textarea id="special-note" rows="2" placeholder="Any special snacks, secret spy codenames, or timing requests..." class="w-full px-4 py-2.5 rounded-xl bg-black/50 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-amber-400 transition-colors resize-none"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-black font-semibold text-sm transition-all duration-300 transform active:scale-98 shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 mt-4">
+                    <i class="fa-solid fa-heart"></i>
+                    <span>Confirm & Send Invitation RSVP</span>
+                </button>
+            </form>
+
+            <!-- Success State Screen (Hidden initially) -->
+            <div id="success-state" class="hidden text-center py-6">
+                <div class="w-16 h-16 bg-amber-500/20 border border-amber-400/50 text-amber-300 rounded-full flex items-center justify-center text-2xl mx-auto mb-4 animate-bounce">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h4 class="text-2xl font-serif font-bold text-white mb-2">It's Official!</h4>
+                <p class="text-sm text-gray-300 mb-6 leading-relaxed">
+                    Invitation accepted! I'll take care of all the arrangements for <span id="confirmed-selection-text" class="text-amber-300 font-semibold"></span>. Get ready for an amazing night!
+                </p>
+                <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-gray-400 text-left font-mono mb-6 space-y-1" id="summary-details">
+                    <!-- Dynamic summary inserted here -->
+                </div>
+                <button onclick="closeModal()" class="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors">
+                    Close Window
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full py-8 px-4 text-center text-xs text-gray-500 border-t border-white/5 mt-12 relative z-10">
+        <p class="font-light">Exclusively created for <span class="text-gray-300">Jasmine</span> • New York City</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let currentSelection = '';
+        let currentType = '';
+
+        // Filter cards view
+        function filterOptions(type) {
+            const cardLego = document.getElementById('card-lego');
+            const cardSpy = document.getElementById('card-spy');
+            const tabAll = document.getElementById('tab-all');
+            const tabLego = document.getElementById('tab-lego');
+            const tabSpy = document.getElementById('tab-spy');
+
+            // Reset tab styles
+            [tabAll, tabLego, tabSpy].forEach(tab => {
+                tab.className = "px-5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white transition-all duration-300";
+            });
+
+            if (type === 'all') {
+                cardLego.style.display = 'flex';
+                cardSpy.style.display = 'flex';
+                tabAll.className = "px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-lg shadow-amber-500/10";
+            } else if (type === 'lego') {
+                cardLego.style.display = 'flex';
+                cardSpy.style.display = 'none';
+                tabLego.className = "px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-lg shadow-amber-500/10";
+            } else if (type === 'spy') {
+                cardLego.style.display = 'none';
+                cardSpy.style.display = 'flex';
+                tabSpy.className = "px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-lg shadow-cyan-500/10";
+            }
+        }
+
+        // Open Modal with specific option
+        function selectOption(optionName, type) {
+            currentSelection = optionName;
+            currentType = type;
+
+            document.getElementById('selected-choice-text').innerText = optionName;
+            
+            const modal = document.getElementById('rsvp-modal');
+            const modalCard = document.getElementById('modal-card');
+            const badge = document.getElementById('modal-badge');
+
+            // Theme tweaks inside modal based on option selected
+            if (type === 'spy') {
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-mono mb-3 bg-cyan-500/20 text-cyan-300 border border-cyan-500/30";
+                badge.innerText = "CLASSIFIED RSVP • SPYSCAPE";
+            } else {
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-mono mb-3 bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                badge.innerText = "CONFIRMING RESERVATION • LEGO & FILM";
+            }
+
+            // Show Form, Hide Success State in case re-opening
+            document.getElementById('rsvp-form').classList.remove('hidden');
+            document.getElementById('success-state').classList.add('hidden');
+
+            // Animation display
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.classList.add('opacity-100');
+            modalCard.classList.remove('scale-95');
+            modalCard.classList.add('scale-100');
+        }
+
+        // Close Modal
+        function closeModal() {
+            const modal = document.getElementById('rsvp-modal');
+            const modalCard = document.getElementById('modal-card');
+
+            modal.classList.add('pointer-events-none', 'opacity-0');
+            modal.classList.remove('opacity-100');
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-95');
+        }
+
+        // Pick Random / Flip Coin
+        function pickRandom() {
+            const options = [
+                { name: 'Lego Minifig & Clayface Movie Night', type: 'lego' },
+                { name: 'SPYSCAPE Spy Games NYC', type: 'spy' }
+            ];
+            const chosen = options[Math.floor(Math.random() * options.length)];
+            
+            // Trigger confetti blast
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.7 }
+            });
+
+            setTimeout(() => {
+                selectOption(chosen.name + " (Chosen by Fate!)", chosen.type);
+            }, 300);
+        }
+
+        // Handle Form Submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const daySelected = document.querySelector('input[name="day"]:checked').value;
+            const drink = document.getElementById('drink-pref').value || 'Surprise Cocktail/Drink';
+            const notes = document.getElementById('special-note').value || 'None';
+
+            // Trigger Fireworks / Confetti
+            triggerConfetti();
+
+            // Populate Success details
+            document.getElementById('confirmed-selection-text').innerText = currentSelection;
+            document.getElementById('summary-details').innerHTML = `
+                <div><strong class="text-gray-200">Selected Event:</strong> ${currentSelection}</div>
+                <div><strong class="text-gray-200">Preferred Day:</strong> ${daySelected}</div>
+                <div><strong class="text-gray-200">Drink/Beverage:</strong> ${drink}</div>
+                <div><strong class="text-gray-200">Special Notes:</strong> ${notes}</div>
+            `;
+
+            // Switch to Success State inside modal
+            document.getElementById('rsvp-form').classList.add('hidden');
+            document.getElementById('success-state').classList.remove('hidden');
+        }
+
+        // Celebration Confetti Effect
+        function triggerConfetti() {
+            const count = 200;
+            const defaults = {
+                origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+                colors: ['#ffd700', '#00f0ff']
+            });
+            fire(0.2, {
+                spread: 60,
+                colors: ['#ffffff', '#ff2a5f']
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                colors: ['#eab308', '#38bdf8']
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+        }
+    </script>
+</body>
+</html>
